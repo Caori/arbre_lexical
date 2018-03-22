@@ -1,6 +1,7 @@
 #include <stdio.h>
-
 #include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 
 #define MAX_SIZE 50
 
@@ -27,7 +28,7 @@ Arbre alloueNoeud(char *m){
   return newnoeud;
 }
 
-int ajouteMot(Arbre *a, char *m) {
+/*int ajouteMot(Arbre *a, char *m) {
   //si le mot ne contient aucune lettre
   if(m == NULL)
     return 0;
@@ -55,7 +56,7 @@ int ajouteMot(Arbre *a, char *m) {
     }
     else return ajouteMot(&(*a)->frered, m);
   }
-}
+}*/
 
 /*int recherche(Arbre a, char *m) { //a corriger
   //m tableau contenant les lettres du mot m
@@ -77,7 +78,7 @@ int ajouteMot(Arbre *a, char *m) {
   return -1;
 }*/
 
-int afficheMots(Tarbre a, int current, char *tab[]) {
+/*int afficheMots(Arbre a, int current, char *tab[]) {
   if(a == NULL)
     return -1;
   if(a->filsg != NULL) {
@@ -97,14 +98,87 @@ int afficheMots(Tarbre a, int current, char *tab[]) {
     }
     printf("%c\n", a->lettre);
   }
+}*/
+
+//prend le tableau tab contenant un string, traite le string :
+//lis le string dans tab jusqu'à tomber sur un ' ', ',', '-'...
+//et met le string lu dans une case du tableau word[]
+// i indice du caractère dans tab, j indice du mot dans mots[]
+/*int fillTab(char mots[][100], int i, int j, char tab[]) {
+  int k = 0;
+  char word[MAX_SIZE];
+  while(tab[i] != ' ' && tab[i] != ','  && tab[i] != '.' && tab[i] != '-' &&
+    tab[i] != "\'" && tab[i] != '\n') {
+    word[k] = tab[i];
+    k++;
+    i++;
+  }
+  word[k] = '\0';
+  j++;
+
+  if(tab[i] == '\n') //si c'est la fin de la ligne dans tab
+    return j;
+
+  if(&tab[i] == NULL)
+    return j;
+
+  else {
+    strcpy(&mots[j][100], word); //met le mot word dans la cellule j de mots
+    j = fillTab(mots, i, j, tab);
+  }
+return j;
+}*/
+
+
+int readTextFile(char mots[][100]) {
+  char ligne[100];
+  int i = 0;
+  int j = 0;
+  FILE * file;
+  file = fopen("texte.txt", "r");
+  if(file != NULL) {
+    //tant qu'il reste des lignes de texte dans le fichier
+    //fgets lit le texte jusqu'à un \n ou jusqu'à la limite de caractères
+    //à lire (ici 100), et met la chaine lue dans tab
+    while(fgets(ligne, 100, file) != NULL) {
+      i = 0;
+      int fin = 0;
+      while(ligne[fin] != '\0') {
+        for(; !isalpha(ligne[i]) ; ++i) {
+          if(ligne[i] == '\0')
+            break;
+        }
+        if(ligne[i] == '\0')
+          break;
+        int fin = i;
+        for(; isalpha(ligne[fin]); ++fin)
+          ;
+        strncpy(&mots[j][0], &ligne[i], fin-i);
+        j++;
+        i = fin;
+      }
+    }
+  }
+  fclose(file);
+  return j; //nombre de mots
 }
+
 //mettre un fichier contenant un texte dans arguments
 int main(int argc, char *argv[]) {
   //détecter les mots dans le fichier (suites de chars
   //séparés par des espaces)
   //les mettre chacun dans un tableau de char mot[MAX_SIZE]
-  Arbre arbre;
-  char *tab[MAX_SIZE];
-  ajouteMot(&arbre, "coucou");
-  afficheMots(arbre, 0, tab);
+  //Arbre arbre;
+  //char *tab[MAX_SIZE];
+  int i = 0;
+  int j = 0;
+  int k = 0;
+  char mots[100][100] = {0};
+  //ajouteMot(&arbre, "coucou");
+  //afficheMots(arbre, 0, tab);
+  j = readTextFile(mots);
+  for(k = 0; k < j; k++) {
+    printf("%s\n", mots[k]);
+  }
+
 }
